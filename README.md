@@ -10,7 +10,7 @@ This project implements a fan-out service using Node.js, Express, and Axios for 
 
 ## Project Structure
 ```
-/fan-out-service/
+node modules/
 /src/
 /routes/
 /fanOut.js
@@ -18,8 +18,8 @@ This project implements a fan-out service using Node.js, Express, and Axios for 
 /fanOutService.js
 /index.js
 /.gitignore
-/ package.json
-/README.md
+package.json
+README.md
 ```
 
 
