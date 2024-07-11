@@ -11,8 +11,8 @@ This project implements a fan-out service using Node.js, Express, and Axios for 
 ## Project Structure
 ```
 node modules/
-/src/
-/routes/
+|--src/
+|----|routes/
 /fanOut.js
 /services/
 /fanOutService.js
@@ -45,7 +45,7 @@ Ensure you have Redis installed and running on your local machine or use a cloud
 4. Start the server
 
    ```bash
-  node src/index.js
+    node src/index.js
 
 5. Test the Fan-Out Endpoint:
 Use a tool like curl or Postman to send a request to http://localhost:3000/fan-out with a JSON body.
@@ -59,3 +59,4 @@ Use a tool like curl or Postman to send a request to http://localhost:3000/fan-o
 -	3.	Commit your changes (git commit -am 'Add some feature')
 -	4.	Push to the branch (git push origin feature/my-feature)
 -	5.	Create a new Pull Request
+```
