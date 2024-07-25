@@ -1,44 +1,61 @@
-const axios = require('axios');
+require('dotenv').config();
+const { callService } = require('../services/serviceCaller');
+const { getAsync, setAsync } = require('../redisClient');
+const winston = require('winston');
+const Joi = require('joi');
+
+
+const logger = winston.createLogger({
+  level: 'info',
+  format: winston.format.json(),
+  defaultMeta: { service: 'fanOutService' },
+  transports: [
+    new winston.transports.Console(),
+    new winston.transports.File({ filename: 'fanOutService.log' })
+  ]
+});
 
 // Downstream service URLs
-const imageProcessingServiceUrl = 'http://image-processing-service/analyze';
-const textExtractionServiceUrl = 'http://text-extraction-service/extract';
-const metadataGenerationServiceUrl = 'http://metadata-generation-service/generate';
+const imageProcessingServiceUrl = process.env.IMAGE_PROCESSING_SERVICE_URL;
+const textExtractionServiceUrl = process.env.TEXT_EXTRACTION_SERVICE_URL;
+const metadataGenerationServiceUrl = process.env.METADATA_GENERATION_SERVICE_URL;
 
-// Function to call a downstream services
-async function callService(url, data) {
-  try {
-    const response = await axios.post(url, data);
-    return response.data;
-  } catch (error) {
-    console.error(`Error calling service at ${url}:`, error.message);
-    return { error: error.message };
-  }
-}
+// schema for for the input data
+const dataSchema = Joi.object({
+  file: Joi.string().required()
+});
 
-// Fan-out function starting point more features can be added here
-//TODO: Implement improved error handling
-// Fan-out function with improved error handling
+// Fan-out function
 async function fanOut(data) {
+  // validate the input data
+  const { error } = dataSchema.validate(data);
+  if (error) {
+    throw new Error(`Invalid data: ${error.details[0].message}`);
+  }
+
+  const cacheKey = JSON.stringify(data);
+  const cachedResponse = await getAsync(cacheKey);
+
+  if (cacheResponse) {
+    logger.info('Cache hit');
+    return JSON.parse(cachedResponse);
+  }
+
   const requests = [
     callService(imageProcessingServiceUrl, data),
     callService(textExtractionServiceUrl, data),
     callService(metadataGenerationServiceUrl, data)
   ];
 
-  const responses = await Promise.allSettled(requests);
-  const results = responses.map(response => {
-    if (response.status === 'fulfilled') {
-      return response.value;
-    } else {
-      console.error('Service call failed:', response.reason);
-      return { error: response.reason };
-    }
-  });
-
-  return results;
+  try {
+    const responses = await Promise.allSettled(requests);
+    await setAsync(cacheKey, JSON.stringify(responses), 'EX', 3600); // cache for 1 hour
+    return responses;
+  } catch (error) {
+    logger.error('Error in fan-out process:', error);
+    throw error;
+  }
 }
-
 // Receives the upload request, & the distributed processing is started.
 // The function aggregates response from the downstream services, handles errors and retries if necessary.
 const uploadData = { file: 'path/to/uploaded/file' };
