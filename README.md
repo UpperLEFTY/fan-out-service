@@ -15,11 +15,13 @@ This project implements a fan-out service using Node.js, Express, and Axios for 
 ```
 node_modules/
 src/
+|-- business-logic/
+|   |-- fanOutService.js
 |-- routes/
 |   |-- fanOut.js
 |   |-- services/
-|       |-- fanOutService.js
-|-- index.js
+|       |-- serviceCaller.js
+|-- app.js
 .gitignore
 package.json
 README.md
