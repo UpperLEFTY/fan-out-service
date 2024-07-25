@@ -1,13 +1,24 @@
 const express = require('express');
-const axios = require('axios');
+const bodyParser = require('body-parser');
+const fanoutRouter = require('./routes/fanout');
+const winston = require('winston');
 
 const app = express();
-app.use(express.json());
+const port = 3000;
 
-const fanOutRouter = require('./routes/fanOut');
-app.use('/fan-out', fanOutRouter);
+// Set up logging
+const logger = winston.createLogger({
+  level: 'info',
+  format: winston.format.json(),
+  transports: [
+    new winston.transports.Console(),
+    new winston.transports.File({ filename: 'app.log' })
+  ]
+});
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+app.use(bodyParser.json());
+app.use('/api', fanoutRouter);
+
+app.listen(port, () => {
+  logger.info(`Server running on port ${port}`);
 });
