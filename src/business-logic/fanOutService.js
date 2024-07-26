@@ -4,6 +4,9 @@ const { getAsync, setAsync } = require('../redisClient');
 const winston = require('winston');
 const Joi = require('joi');
 const featureToggle = require('feature-toggle');
+const pool = require('../dbClient');
+const { services } = require('../config/servicesConfig');
+
 
 // Set up logging
 const logger = winston.createLogger({
@@ -15,15 +18,16 @@ const logger = winston.createLogger({
   ]
 });
 
-// Downstream service URLs from envs
-const imageProcessingServiceUrl = process.env.IMAGE_PROCESSING_URL;
-const textExtractionServiceUrl = process.env.TEXT_EXTRACTION_URL;
-const metadataGenerationServiceUrl = process.env.METADATA_GENERATION_URL;
-
 // Define a schema for the input data
 const dataSchema = Joi.object({
   file: Joi.string().required()
 });
+
+// Function to save responses to the database
+async function DB(data) {
+  const query = 'INSERT INTO responses (data) VALUES ($1)';
+  await pool.query(query, [JSON.stringify(data)]);
+}
 
 // Feature toggle for caching
 const useCaching = featureToggle('useCaching', true);
@@ -47,18 +51,13 @@ async function fanOut(data) {
     }
   }
 
-  const requests = [
-    callService(imageProcessingServiceUrl, data),
-    callService(textExtractionServiceUrl, data),
-    callService(metadataGenerationServiceUrl, data)
-  ];
+  const requests = services.map(service => callService(service.url, data));
 
   try {
     const responses = await Promise.all(requests);
 
-    if (useCaching) {
-      await setAsync(cacheKey, JSON.stringify(responses), 'EX', 3600); // Cache for 1 hour
-    }
+    await setAsync(cacheKey, JSON.stringify(responses), 'EX', 3600); // Cache for 1 hour
+    await DB(responses);
 
     return responses;
   } catch (error) {
