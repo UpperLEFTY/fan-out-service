@@ -1,21 +1,26 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const fanoutRouter = require('./routes/fanout');
-const winston = require('winston');
+const { logger } = require('./config/logger');
 
 const app = express();
 const port = 3000;
 
-// Set up logging
-const logger = winston.createLogger({
-  level: 'info',
-  format: winston.format.json(),
-  transports: [
-    new winston.transports.Console(),
-    new winston.transports.File({ filename: 'app.log' })
-  ]
+
+
+// Handle uncaught exceptions
+process.on('uncaughtException', (error) => {
+  logger.error('Uncaught Exception:', error);
+  // Optionally, you can exit the process after logging the error
+  process.exit(1);
 });
 
+// Handle unhandled promise rejections
+process.on('unhandledRejection', (reason, promise) => {
+  logger.error('Unhandled Rejection at:', promise, 'reason:', reason);
+  // Optionally, you can exit the process after logging the error
+  process.exit(1);
+});
 // import routes
 const fanoutRouterV1 = require('./routes/fanout'); // Existing route
 const fanoutRouterV2 = require('./routes/v2/fanout') // New route

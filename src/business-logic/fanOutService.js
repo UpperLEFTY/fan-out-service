@@ -5,7 +5,6 @@ const winston = require('winston');
 const Joi = require('joi');
 const featureToggle = require('feature-toggle');
 const pool = require('../dbClient');
-const { services } = require('../config/servicesConfig');
 
 
 // Set up logging
@@ -31,6 +30,11 @@ async function saveToDatabase(data) {
 
 // Feature toggle for caching
 const useCaching = featureToggle('useCaching', true);
+const defaultOptions = {
+  ttl: 1200,
+  default: {}
+};
+
 
 // Fanout
 async function fanOut(data) {
@@ -41,10 +45,8 @@ async function fanOut(data) {
   }
 
   const cacheKey = JSON.stringify(data);
-
   if (useCaching) {
     const cachedResponse = await getAsync(cacheKey);
-
     if (cachedResponse) {
       logger.info('Cache hit');
       return JSON.parse(cachedResponse);
@@ -55,7 +57,6 @@ async function fanOut(data) {
 
   try {
     const responses = await Promise.all(requests);
-
     await setAsync(cacheKey, JSON.stringify(responses), 'EX', 3600); // Cache for 1 hour
     await saveToDatabase(responses);
 
