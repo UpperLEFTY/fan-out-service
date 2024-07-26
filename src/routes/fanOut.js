@@ -28,7 +28,7 @@ router.post('/fanout', fanOutLimiter, async (req, res) => {
     const responses = await fanOut(data);
     res.json(responses);
   } catch (error) {
-    logger.error('Error in fan-out endpoint:', error);
+    logger.error('Error in fanout endpoint:', error);
     res.status(500).send('Internal server error');
   }
 });

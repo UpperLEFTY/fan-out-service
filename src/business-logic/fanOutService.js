@@ -24,7 +24,7 @@ const dataSchema = Joi.object({
 });
 
 // Function to save responses to the database
-async function DB(data) {
+async function saveToDatabase(data) {
   const query = 'INSERT INTO responses (data) VALUES ($1)';
   await pool.query(query, [JSON.stringify(data)]);
 }
@@ -32,7 +32,7 @@ async function DB(data) {
 // Feature toggle for caching
 const useCaching = featureToggle('useCaching', true);
 
-// Fan-out function
+// Fanout
 async function fanOut(data) {
   // Validate input data
   const { error } = dataSchema.validate(data);
@@ -57,7 +57,7 @@ async function fanOut(data) {
     const responses = await Promise.all(requests);
 
     await setAsync(cacheKey, JSON.stringify(responses), 'EX', 3600); // Cache for 1 hour
-    await DB(responses);
+    await saveToDatabase(responses);
 
     return responses;
   } catch (error) {
