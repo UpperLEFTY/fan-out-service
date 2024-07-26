@@ -9,6 +9,9 @@ This project implements a fan-out service using Node.js, Express, and Axios for 
 - **Parallel Processing**: Processes multiple requests in parallel to improve efficiency.
 - **Error Handling**: Handles errors gracefully and returns appropriate error responses.
 - **Logging**: Logs important events and errors to help with debugging and monitoring.
+- **Feature Flags**: Uses feature flags to enable or disable certain features at runtime.
+- **Configuration Management**: Uses a configuration file to manage service URLs and other settings.
+- **Unit Testing**: Includes unit tests for business logic and routes using Jest and Supertest.
 
 
 ## Project Structure
@@ -19,9 +22,13 @@ src/
 |   |-- fanOutService.js
 |-- routes/
 |   |-- fanOut.js
-|   |-- services/
-|       |-- serviceCaller.js
+|-- services/
+|   |-- serviceCaller.js
+|-- config/
+|   |-- servicesConfig.js
 |-- app.js
+|-- dbClient.js
+|-- redisClient.js
 .gitignore
 package.json
 README.md
