@@ -6,8 +6,11 @@ const winston = require('winston');
 
 // Set up logging
 const logger = winston.createLogger({
-  level: 'info',
-  format: winston.format.json(),
+  level: process.env.LOG_LEVEL ||'info', // Use LOG_LEVEL environment variable
+  format: winston.format.combine(
+    winston.format.timestamp(),
+    winston.format.json()
+  ),
   transports: [
     new winston.transports.Console(),
     new winston.transports.File({ filename: 'app.log' })
