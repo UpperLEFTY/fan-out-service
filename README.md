@@ -15,8 +15,8 @@ This project implements a fan-out service using Node.js, Express, and Axios for 
 - **Rate Limiting**: Implements rate limiting to prevent abuse and ensure fair usage.
 - **Configuration Management**: Uses a configuration file to manage service URLs and other settings.
 - **PG Database**: Uses a PostgreSQL database to store data.
-- **Unit Testing**: Includes unit tests for business logic and routes using Jest and Supertest.
-- **Docker Support**: Includes a Dockerfile for containerization and easy deployment.
+- **Unit Testing**: Includes unit tests for business logic and routes using Jest and Supertest. [WIP]
+- **Docker Support**: Includes a Dockerfile for containerization and easy deployment. [WIP]
 
 
 ## Project Structure
