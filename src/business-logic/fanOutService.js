@@ -1,21 +1,10 @@
 require('dotenv').config();
 const { callService } = require('../services/serviceCaller');
 const { getAsync, setAsync } = require('../redisClient');
-const winston = require('winston');
+const { logger } = require('../config/logger'); // Using the new logger instance
 const Joi = require('joi');
 const featureToggle = require('feature-toggle');
 const pool = require('../dbClient');
-
-
-// Set up logging
-const logger = winston.createLogger({
-  level: 'info',
-  format: winston.format.json(),
-  transports: [
-    new winston.transports.Console(),
-    new winston.transports.File({ filename: 'app.log' })
-  ]
-});
 
 // Define a schema for the input data
 const dataSchema = Joi.object({
@@ -34,7 +23,6 @@ const defaultOptions = {
   ttl: 1200,
   default: {}
 };
-
 
 // Fanout
 async function fanOut(data) {
