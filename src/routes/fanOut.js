@@ -2,17 +2,8 @@ const express = require('express');
 const rateLimit = require('express-rate-limit');
 const router = express.Router();
 const { fanOut } = require('../business-logic/fanOutService');
-const { winston } = require('winston');
+const { logger } = require('../config/logger');
 
-// set up logging
-const logger = winston.createLogger({
-  level: 'info',
-  format: winston.format.json(),
-  transports: [ 
-    new winston.transports.Console(),
-    new winston.transports.File({ filename: 'app.log' })
-  ]
-});
 
 // rate limiting middleware specific to the fan-out route
 const fanOutLimiter = rateLimit({

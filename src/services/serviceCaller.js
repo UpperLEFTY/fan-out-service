@@ -1,15 +1,5 @@
 const axios = require('axios');
-const winston = require('winston');
-
-// Set up logging
-const logger = winston.createLogger({
-  level: 'info',
-  format: winston.format.json(),
-  transports: [
-    new winston.transports.Console(),
-    new winston.transports.File({ filename: 'app.log' })
-  ]
-});
+const {logger} = require('../config/logger');
 
 // Function to call a downstream service
 async function callService(url, data) {
