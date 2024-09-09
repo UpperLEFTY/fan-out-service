@@ -50,7 +50,7 @@ README.md
 **Clone the Repository:**
 
    ```sh
-    git clone https://github.com/yourusername/fan-out-service.git
+  git clone https://github.com/yourusername/fan-out-service.git
    cd fan-out-service
  
 2. Install Dependencies:

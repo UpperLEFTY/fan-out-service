@@ -9,6 +9,7 @@ const logDir = 'logs';
     fs.mkdirSync(logDir);
   }
 
+// logs errors and keeps up 14 days 
 const logger = winston.createLogger({
   level: process.env.LOG_LEVEL || 'info',
   format: winston.format.combine(
@@ -22,25 +23,25 @@ const logger = winston.createLogger({
     new winston.transports.Console(),
     new DailyRotateFile({
       filename: path.join(logDir, 'app-%DATE%.log'),
-      datePattern: 'YYYY-MM-DD',
-      maxSize: '20m',
-      maxFiles: '14d'
+      datePattern: 'YYYY-MM-DD-HH',
+      maxSize: '20m', // Limits each log file to 20 megabytes (Can be adjusted)
+      maxFiles: '14d' // Automatically delete files older than 14 days
     })
   ],
   exceptionHandlers: [
     new DailyRotateFile({
       filename: path.join(logDir, 'exceptions-%DATE%.log'),
-      datePattern: 'YYYY-MM-DD',
-      maxSize: '20m',
-      maxFiles: '14d'
+      datePattern: 'YYYY-MM-DD-HH',
+      maxSize: '20m', // Limits each log file to 20 megabytes (Can be adjusted)
+      maxFiles: '14d' // Automatically delete files older than 14 days
     })
   ],
   rejectionHandlers: [
     new DailyRotateFile({
       filename: path.join(logDir, 'rejections-%DATE%.log'),
-      datePattern: 'YYYY-MM-DD',
-      maxSize: '20m',
-      maxFiles: '14d'
+      datePattern: 'YYYY-MM-DD-HH',
+      maxSize: '20m', // Limits each log file to 20 megabytes (Can be adjusted)
+      maxFiles: '14d' // Automatically delete files older than 14 days
     })
   ]
 });
