@@ -1,6 +1,8 @@
 # Fan-Out Service Template
 
-This project implements a fan-out service using Node.js, Express, and Axios for making HTTP requests, along with Redis for distributed caching to optimize performance. The service accepts a single request and fans out to multiple downstream services, aggregating their responses into a single response.
+This project implements a fan-out service using Node.js, Express, and Axios for making HTTP requests, along with Redis for distributed caching to optimize performance. The service accepts a single request and fans out to multiple downstream services.
+
+# Fan-In 
 
 
 ## Features
@@ -25,8 +27,10 @@ node_modules/
 src/
 |-- business-logic/
 |   |-- fanOutService.js
+|   |-- fanInService.js
 |-- routes/
 |   |-- fanOut.js
+|   |-- fanIn.js
 |-- services/
 |   |-- serviceCaller.js
 |-- config/
